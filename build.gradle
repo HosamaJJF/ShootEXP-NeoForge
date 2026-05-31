@@ -49,8 +49,25 @@ neoForge {
     }
 }
 
+// Workaround: moddev 2.0.141 doesn't include jarJar deps in dev runtime classpath.
+// Append exp4j to the legacy classpath file before launching the game.
+tasks.named('runClient') {
+    doFirst {
+        def exp4jJar = configurations.runtimeClasspath
+            .find { it.name.contains('exp4j') }
+        if (exp4jJar) {
+            def classpathFile = layout.buildDirectory.file('moddev/clientLegacyClasspath.txt').get().asFile
+            if (!classpathFile.text.contains('exp4j')) {
+                classpathFile << exp4jJar.absolutePath + '\n'
+                logger.lifecycle("Added exp4j to client legacy classpath: ${exp4jJar.absolutePath}")
+            }
+        }
+    }
+}
+
 dependencies {
     implementation 'net.objecthunter:exp4j:0.4.8'
+    runtimeOnly 'net.objecthunter:exp4j:0.4.8'
     jarJar('net.objecthunter:exp4j:0.4.8') {
         version {
             strictly '[0.4.8,0.5)'
