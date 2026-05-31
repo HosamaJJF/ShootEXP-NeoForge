@@ -36,7 +36,7 @@ public class EatHandler {
             var block = level.getBlockState(pos).getBlock();
             var key = block.builtInRegistryHolder().key();
             if (key != null) {
-                String keyStr = key.identifier().toString();
+                String keyStr = key.location().toString();
                 // Brewery barrel and cauldron block IDs
                 if (keyStr.contains("brewery") && (keyStr.contains("barrel") || keyStr.contains("cauldron"))) {
                     return; // Don't consume EXP item when interacting with Brewery

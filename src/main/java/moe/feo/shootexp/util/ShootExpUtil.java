@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -171,9 +171,9 @@ public final class ShootExpUtil {
     }
 
     /**
-     * Parse an Identifier from the config sound string.
+     * Parse a ResourceLocation from the config sound string.
      */
-    public static Identifier parseSoundLocation(String soundName) {
-        return Identifier.parse(soundName);
+    public static ResourceLocation parseSoundLocation(String soundName) {
+        return ResourceLocation.parse(soundName);
     }
 }
