@@ -83,17 +83,17 @@ public class EatHandler {
                 .replace("%RECIPIENT%", recipient)
                 .replace("%AMOUNT%", String.valueOf(amount));
         if (Config.privateMessage()) {
-            player.sendSystemMessage(ShootExpUtil.formatComponent(msg));
+            player.displayClientMessage(ShootExpUtil.formatComponent(msg), false);
             // Notify the owner
             var ownerPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(owner);
             if (ownerPlayer != null) {
-                ownerPlayer.sendSystemMessage(ShootExpUtil.formatComponent(msg));
+                ownerPlayer.displayClientMessage(ShootExpUtil.formatComponent(msg), false);
             }
             // Notify the recipient
             if (recipient != null) {
                 var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipient);
                 if (recipientPlayer != null) {
-                    recipientPlayer.sendSystemMessage(ShootExpUtil.formatComponent(msg));
+                    recipientPlayer.displayClientMessage(ShootExpUtil.formatComponent(msg), false);
                 }
             }
         } else {

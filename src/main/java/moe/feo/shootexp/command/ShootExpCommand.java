@@ -14,8 +14,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.LevelBasedPermissionSet;
-import net.minecraft.server.permissions.PermissionLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
@@ -23,12 +21,7 @@ import java.util.function.Predicate;
 
 public class ShootExpCommand {
 
-    private static final Predicate<CommandSourceStack> REQUIRE_OP = s -> {
-        if (s.permissions() instanceof LevelBasedPermissionSet levelSet) {
-            return levelSet.level().isEqualOrHigherThan(PermissionLevel.GAMEMASTERS);
-        }
-        return false;
-    };
+    private static final Predicate<CommandSourceStack> REQUIRE_OP = s -> s.hasPermission(2);
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {

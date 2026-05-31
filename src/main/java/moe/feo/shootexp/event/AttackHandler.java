@@ -106,9 +106,9 @@ public class AttackHandler {
 
     private void broadcast(String message, Player attacker, Entity defender) {
         if (Config.privateMessage()) {
-            attacker.sendSystemMessage(ShootExpUtil.formatComponent(message));
+            attacker.displayClientMessage(ShootExpUtil.formatComponent(message), false);
             if (defender instanceof Player p) {
-                p.sendSystemMessage(ShootExpUtil.formatComponent(message));
+                p.displayClientMessage(ShootExpUtil.formatComponent(message), false);
             }
         } else {
             ((ServerLevel) attacker.level()).getServer().getPlayerList().broadcastSystemMessage(
