@@ -1,0 +1,36 @@
+{
+  "lang": "zh_CN",
+  "private-message": false,
+  "max-stock": 1000,
+  "required-attack-times": "1.618^SHOOT + 10",
+  "shoot-amount": "STOCK / 2",
+  "entity-type": [
+    "Player",
+    "PathfinderMob"
+  ],
+  "exp-type": "VANILLA",
+  "attack": {
+    "distance": 2.0,
+    "timeout": 100
+  },
+  "restore": {
+    "shoot": {
+      "period": 6000,
+      "amount": 1
+    },
+    "stock": {
+      "period": 6000,
+      "amount": 200
+    }
+  },
+  "custom-model-data": {
+    "enable": false,
+    "value": 0
+  },
+  "sound": {
+    "attack": "entity.parrot.imitate.slime",
+    "shoot": "block.slime_block.step",
+    "shoot-no-exp": "entity.llama.eat",
+    "eat": "entity.generic.drink"
+  }
+}
