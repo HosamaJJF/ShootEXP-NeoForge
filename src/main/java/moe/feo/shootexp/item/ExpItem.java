@@ -65,9 +65,9 @@ public final class ExpItem {
             stack.set(DataComponents.CUSTOM_MODEL_DATA,
                     (CustomModelData) ctor.newInstance(List.of(value), List.of(), List.of(), List.of()));
         } catch (NoSuchMethodException e) {
-            stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(value));
+            stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData((int) value));
         } catch (Exception e) {
-            stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(value));
+            stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData((int) value));
         }
     }
 

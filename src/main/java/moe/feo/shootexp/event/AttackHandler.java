@@ -8,7 +8,6 @@ import moe.feo.shootexp.mechanic.CoupleManager;
 import moe.feo.shootexp.mechanic.PlayerStatus;
 import moe.feo.shootexp.mechanic.PlayerStatusManager;
 import moe.feo.shootexp.util.ShootExpUtil;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -118,12 +117,11 @@ public class AttackHandler {
 
     private void playSound(Player player, String soundName) {
         var id = ShootExpUtil.parseSoundLocation(soundName);
-        var optHolder = BuiltInRegistries.SOUND_EVENT.get(id);
-        if (optHolder.isPresent()) {
-            Holder<SoundEvent> holder = optHolder.get();
+        SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(id);
+        if (soundEvent != null) {
             player.level().playSound(
                     null, player.getX(), player.getY(), player.getZ(),
-                    holder, player.getSoundSource(), 1.0f, 1.0f);
+                    soundEvent, player.getSoundSource(), 1.0f, 1.0f);
         } else {
             ShootEXP.LOGGER.warn("Sound not found in registry: {} (parsed from: {})", id, soundName);
         }

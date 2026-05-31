@@ -5,7 +5,6 @@ import moe.feo.shootexp.ShootEXP;
 import moe.feo.shootexp.integration.ExpHandler;
 import moe.feo.shootexp.item.ExpItem;
 import moe.feo.shootexp.util.ShootExpUtil;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,12 +64,11 @@ public class EatHandler {
 
         // Play eat sound
         var soundId = ShootExpUtil.parseSoundLocation(Config.soundEat());
-        var optHolder = BuiltInRegistries.SOUND_EVENT.get(soundId);
-        if (optHolder.isPresent()) {
-            Holder<SoundEvent> holder = optHolder.get();
+        SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(soundId);
+        if (soundEvent != null) {
             player.level().playSound(
                     null, player.getX(), player.getY(), player.getZ(),
-                    holder, player.getSoundSource(), 1.0f, 1.0f);
+                    soundEvent, player.getSoundSource(), 1.0f, 1.0f);
         } else {
             ShootEXP.LOGGER.warn("Sound not found in registry: {}", soundId);
         }
