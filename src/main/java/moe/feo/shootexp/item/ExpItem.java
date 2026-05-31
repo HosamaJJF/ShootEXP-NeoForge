@@ -11,6 +11,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.ItemLore;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,13 +50,25 @@ public final class ExpItem {
                 ShootExpUtil.lang("shootexp.item.lore.4")));
         stack.set(DataComponents.LORE, new ItemLore(lore));
 
-        // Custom model data
+        // Custom model data (reflection for 1.21.0-1.21.1 vs 1.21.2+)
         if (Config.customModelDataEnable()) {
-            stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                    new CustomModelData(List.of((float) Config.customModelDataValue()), List.of(), List.of(), List.of()));
+            setCustomModelData(stack, (float) Config.customModelDataValue());
         }
 
         return stack;
+    }
+
+    private static void setCustomModelData(ItemStack stack, float value) {
+        try {
+            Constructor<?> ctor = CustomModelData.class.getConstructor(
+                    List.class, List.class, List.class, List.class);
+            stack.set(DataComponents.CUSTOM_MODEL_DATA,
+                    (CustomModelData) ctor.newInstance(List.of(value), List.of(), List.of(), List.of()));
+        } catch (NoSuchMethodException e) {
+            stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(value));
+        } catch (Exception e) {
+            stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(value));
+        }
     }
 
     public static boolean isExpItem(ItemStack stack) {
@@ -69,18 +82,18 @@ public final class ExpItem {
     public static String getOwner(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
-        return customData.copyTag().getString("owner").orElse(null);
+        return customData.copyTag().getString("owner");
     }
 
     public static String getRecipient(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
-        return customData.copyTag().getString("recipient").orElse(null);
+        return customData.copyTag().getString("recipient");
     }
 
     public static int getAmount(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return 0;
-        return customData.copyTag().getInt("amount").orElse(0);
+        return customData.copyTag().getInt("amount");
     }
 }
