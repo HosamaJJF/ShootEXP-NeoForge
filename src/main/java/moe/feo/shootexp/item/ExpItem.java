@@ -87,7 +87,7 @@ public final class ExpItem {
     public static String getOwnerDescId(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
-        return customData.copyTag().getString("ownerDescId");
+        return customData.copyTag().getString("ownerDescId").orElse(null);
     }
 
     public static String getRecipient(ItemStack stack) {
@@ -99,7 +99,7 @@ public final class ExpItem {
     public static String getRecipientDescId(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
-        return customData.copyTag().getString("recipientDescId");
+        return customData.copyTag().getString("recipientDescId").orElse(null);
     }
 
     public static int getAmount(ItemStack stack) {
