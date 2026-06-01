@@ -19,7 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -76,13 +78,14 @@ public class AttackHandler {
         int amount = status.ejaculation();
         Entity defender = couple.defender();
 
+        Map<String, net.minecraft.network.chat.Component> placeholders = new HashMap<>();
+        placeholders.put("ATTACKER", attacker.getDisplayName());
+        placeholders.put("DEFENDER", defender.getDisplayName());
+        placeholders.put("TIMES", net.minecraft.network.chat.Component.literal(String.valueOf(couple.numOfAttack())));
+
         if (amount <= 0) {
             // No EXP to shoot
-            String msg = ShootExpUtil.lang("shootexp.message.shoot_no_exp")
-                    .replace("%ATTACKER%", attacker.getName().getString())
-                    .replace("%DEFENDER%", defender.getName().getString())
-                    .replace("%TIMES%", String.valueOf(couple.numOfAttack()));
-            broadcast(msg, attacker, defender);
+            broadcast(ShootExpUtil.lang("shootexp.message.shoot_no_exp"), placeholders, attacker, defender);
             playSound(attacker, Config.soundShootNoExp());
         } else {
             // Create EXP item and drop it
@@ -92,27 +95,23 @@ public class AttackHandler {
                     amount);
             attacker.drop(expItem, false);
 
-            String msg = ShootExpUtil.lang("shootexp.message.shoot")
-                    .replace("%ATTACKER%", attacker.getName().getString())
-                    .replace("%DEFENDER%", defender.getName().getString())
-                    .replace("%AMOUNT%", String.valueOf(amount))
-                    .replace("%TIMES%", String.valueOf(couple.numOfAttack()));
-            broadcast(msg, attacker, defender);
+            placeholders.put("AMOUNT", net.minecraft.network.chat.Component.literal(String.valueOf(amount)));
+            broadcast(ShootExpUtil.lang("shootexp.message.shoot"), placeholders, attacker, defender);
             playSound(attacker, Config.soundShoot());
         }
 
         CoupleManager.remove(attacker.getUUID());
     }
 
-    private void broadcast(String message, Player attacker, Entity defender) {
+    private void broadcast(String template, Map<String, net.minecraft.network.chat.Component> placeholders, Player attacker, Entity defender) {
+        net.minecraft.network.chat.Component msg = ShootExpUtil.formatMessage(template, placeholders);
         if (Config.privateMessage()) {
-            attacker.displayClientMessage(ShootExpUtil.formatComponent(message), false);
+            attacker.displayClientMessage(msg, false);
             if (defender instanceof Player p) {
-                p.displayClientMessage(ShootExpUtil.formatComponent(message), false);
+                p.displayClientMessage(msg, false);
             }
         } else {
-            ((ServerLevel) attacker.level()).getServer().getPlayerList().broadcastSystemMessage(
-                    ShootExpUtil.formatComponent(message), false);
+            ((ServerLevel) attacker.level()).getServer().getPlayerList().broadcastSystemMessage(msg, false);
         }
     }
 
