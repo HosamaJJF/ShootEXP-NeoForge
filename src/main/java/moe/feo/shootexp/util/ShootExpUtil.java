@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
@@ -34,16 +35,19 @@ public final class ShootExpUtil {
         if (langMap != null) return langMap;
         String lang = Config.lang();
         String path = "/assets/shootexp/lang/" + lang + ".json";
-        try (Reader reader = new InputStreamReader(
-                ShootExpUtil.class.getResourceAsStream(path))) {
-            if (reader == null) {
-                // Fallback to English
-                try (Reader fallback = new InputStreamReader(
-                        ShootExpUtil.class.getResourceAsStream("/assets/shootexp/lang/en_us.json"))) {
-                    langMap = GSON.fromJson(fallback, new TypeToken<Map<String, String>>() {}.getType());
-                }
+        try {
+            InputStream stream = ShootExpUtil.class.getResourceAsStream(path);
+            if (stream == null) {
+                ShootEXP.LOGGER.warn("Language file not found: {}, falling back to en_us", lang);
+                stream = ShootExpUtil.class.getResourceAsStream("/assets/shootexp/lang/en_us.json");
+            }
+            if (stream == null) {
+                ShootEXP.LOGGER.error("Fallback language file en_us.json not found!");
+                langMap = new HashMap<>();
             } else {
-                langMap = GSON.fromJson(reader, new TypeToken<Map<String, String>>() {}.getType());
+                try (Reader reader = new InputStreamReader(stream)) {
+                    langMap = GSON.fromJson(reader, new TypeToken<Map<String, String>>() {}.getType());
+                }
             }
         } catch (Exception e) {
             ShootEXP.LOGGER.error("Failed to load language file: {}", lang, e);
