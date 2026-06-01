@@ -23,7 +23,7 @@ public class Config {
     private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("shootexp.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static String lang = "zh_CN";
+    private static String lang = "zh_cn";
     private static boolean privateMessage = false;
     private static int maxStock = 1000;
     private static String requiredAttackTimes = "1.618^SHOOT + 10";
