@@ -57,8 +57,10 @@ public class EatHandler {
         if (!(player instanceof ServerPlayer)) return false;
         if (!ExpItem.isExpItem(stack)) return false;
 
-        String owner = ExpItem.getOwner(stack);
-        String recipient = ExpItem.getRecipient(stack);
+        String ownerName = ExpItem.getOwner(stack);
+        String recipientName = ExpItem.getRecipient(stack);
+        String ownerDescId = ExpItem.getOwnerDescId(stack);
+        String recipientDescId = ExpItem.getRecipientDescId(stack);
         int amount = ExpItem.getAmount(stack);
 
         // Give experience
@@ -84,19 +86,23 @@ public class EatHandler {
 
         // Resolve owner/recipient display names (try online players first)
         Component ownerDisplay;
-        var ownerPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(owner);
+        var ownerPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(ownerName);
         if (ownerPlayer != null) {
             ownerDisplay = ownerPlayer.getDisplayName();
+        } else if (ownerDescId != null && !ownerDescId.isEmpty()) {
+            ownerDisplay = Component.translatable(ownerDescId);
         } else {
-            ownerDisplay = Component.literal(owner);
+            ownerDisplay = Component.literal(ownerName);
         }
         Component recipientDisplay;
-        if (recipient != null) {
-            var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipient);
+        if (recipientName != null) {
+            var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipientName);
             if (recipientPlayer != null) {
                 recipientDisplay = recipientPlayer.getDisplayName();
+            } else if (recipientDescId != null && !recipientDescId.isEmpty()) {
+                recipientDisplay = Component.translatable(recipientDescId);
             } else {
-                recipientDisplay = Component.literal(recipient);
+                recipientDisplay = Component.literal(recipientName);
             }
         } else {
             recipientDisplay = Component.literal("");
@@ -114,8 +120,8 @@ public class EatHandler {
                 ownerPlayer.displayClientMessage(msg, false);
             }
             // Notify the recipient
-            if (recipient != null) {
-                var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipient);
+            if (recipientName != null) {
+                var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipientName);
                 if (recipientPlayer != null) {
                     recipientPlayer.displayClientMessage(msg, false);
                 }

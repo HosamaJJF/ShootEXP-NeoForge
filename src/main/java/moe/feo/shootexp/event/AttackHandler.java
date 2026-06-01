@@ -89,10 +89,7 @@ public class AttackHandler {
             playSound(attacker, Config.soundShootNoExp());
         } else {
             // Create EXP item and drop it
-            ItemStack expItem = ExpItem.create(
-                    attacker.getDisplayName(),
-                    defender.getDisplayName(),
-                    amount);
+            ItemStack expItem = ExpItem.create(attacker, defender, amount);
             attacker.drop(expItem, false);
 
             placeholders.put("AMOUNT", net.minecraft.network.chat.Component.literal(String.valueOf(amount)));

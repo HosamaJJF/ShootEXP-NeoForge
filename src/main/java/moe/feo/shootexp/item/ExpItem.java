@@ -5,6 +5,7 @@ import moe.feo.shootexp.util.ShootExpUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
@@ -22,16 +23,23 @@ public final class ExpItem {
 
     private ExpItem() {}
 
-    public static ItemStack create(Component ownerDisplay, Component recipientDisplay, int amount) {
+    public static ItemStack create(Entity owner, Entity recipient, int amount) {
         ItemStack stack = new ItemStack(Items.BONE_MEAL);
         stack.setCount(1);
 
+        Component ownerDisplay = owner.getDisplayName();
+        Component recipientDisplay = recipient.getDisplayName();
+
         // Store data in CUSTOM_DATA component
-        String ownerStr = ownerDisplay.getString();
-        String recipientStr = recipientDisplay.getString();
+        String ownerName = owner.getName().getString();
+        String recipientName = recipient.getName().getString();
+        String ownerDescId = owner.getType().getDescriptionId();
+        String recipientDescId = recipient.getType().getDescriptionId();
         CompoundTag tag = new CompoundTag();
-        tag.putString("owner", ownerStr);
-        tag.putString("recipient", recipientStr);
+        tag.putString("owner", ownerName);
+        tag.putString("recipient", recipientName);
+        tag.putString("ownerDescId", ownerDescId);
+        tag.putString("recipientDescId", recipientDescId);
         tag.putInt("amount", amount);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
@@ -76,10 +84,22 @@ public final class ExpItem {
         return customData.copyTag().getString("owner").orElse(null);
     }
 
+    public static String getOwnerDescId(ItemStack stack) {
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return null;
+        return customData.copyTag().getString("ownerDescId");
+    }
+
     public static String getRecipient(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
         return customData.copyTag().getString("recipient").orElse(null);
+    }
+
+    public static String getRecipientDescId(ItemStack stack) {
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return null;
+        return customData.copyTag().getString("recipientDescId");
     }
 
     public static int getAmount(ItemStack stack) {
