@@ -90,8 +90,8 @@ public class AttackHandler {
         } else {
             // Create EXP item and drop it
             ItemStack expItem = ExpItem.create(
-                    attacker.getName().getString(),
-                    defender.getName().getString(),
+                    attacker.getDisplayName(),
+                    defender.getDisplayName(),
                     amount);
             attacker.drop(expItem, false);
 

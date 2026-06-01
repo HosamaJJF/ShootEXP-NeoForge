@@ -12,7 +12,9 @@ import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class ExpItem {
 
@@ -20,33 +22,35 @@ public final class ExpItem {
 
     private ExpItem() {}
 
-    public static ItemStack create(String owner, String recipient, int amount) {
+    public static ItemStack create(Component ownerDisplay, Component recipientDisplay, int amount) {
         ItemStack stack = new ItemStack(Items.BONE_MEAL);
         stack.setCount(1);
 
         // Store data in CUSTOM_DATA component
+        String ownerStr = ownerDisplay.getString();
+        String recipientStr = recipientDisplay.getString();
         CompoundTag tag = new CompoundTag();
-        tag.putString("owner", owner);
-        tag.putString("recipient", recipient);
+        tag.putString("owner", ownerStr);
+        tag.putString("recipient", recipientStr);
         tag.putInt("amount", amount);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
+        // Build placeholder map for item name and lore
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("OWNER", ownerDisplay);
+        placeholders.put("RECIPIENT", recipientDisplay);
+        placeholders.put("AMOUNT", Component.literal(String.valueOf(amount)));
+
         // Custom name
-        String nameFormat = ShootExpUtil.lang("shootexp.item.name")
-                .replace("%OWNER%", owner)
-                .replace("%RECIPIENT%", recipient);
-        stack.set(DataComponents.CUSTOM_NAME, ShootExpUtil.formatComponent(nameFormat));
+        stack.set(DataComponents.CUSTOM_NAME,
+                ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.item.name"), placeholders));
 
         // Lore
         List<Component> lore = new ArrayList<>();
-        lore.add(ShootExpUtil.formatComponent(
-                ShootExpUtil.lang("shootexp.item.lore.1").replace("%AMOUNT%", String.valueOf(amount))));
-        lore.add(ShootExpUtil.formatComponent(
-                ShootExpUtil.lang("shootexp.item.lore.2").replace("%OWNER%", owner).replace("%RECIPIENT%", recipient)));
-        lore.add(ShootExpUtil.formatComponent(
-                ShootExpUtil.lang("shootexp.item.lore.3")));
-        lore.add(ShootExpUtil.formatComponent(
-                ShootExpUtil.lang("shootexp.item.lore.4")));
+        lore.add(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.item.lore.1"), placeholders));
+        lore.add(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.item.lore.2"), placeholders));
+        lore.add(ShootExpUtil.formatComponent(ShootExpUtil.lang("shootexp.item.lore.3")));
+        lore.add(ShootExpUtil.formatComponent(ShootExpUtil.lang("shootexp.item.lore.4")));
         stack.set(DataComponents.LORE, new ItemLore(lore));
 
         // Custom model data

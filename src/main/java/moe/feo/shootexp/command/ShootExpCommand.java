@@ -115,7 +115,7 @@ public class ShootExpCommand {
         ServerPlayer recipient = EntityArgument.getPlayer(ctx, "recipient");
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
 
-        var item = ExpItem.create(owner.getName().getString(), recipient.getName().getString(), amount);
+        var item = ExpItem.create(owner.getDisplayName(), recipient.getDisplayName(), amount);
         if (!ctx.getSource().getPlayerOrException().getInventory().add(item)) {
             ctx.getSource().getPlayerOrException().drop(item, false);
         }
