@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +96,59 @@ public final class ShootExpUtil {
             } else {
                 current.append(c);
             }
+        }
+        if (current.length() > 0) {
+            result.append(Component.literal(current.toString()).withStyle(currentStyle));
+        }
+        return result;
+    }
+
+    public static Component formatMessage(String template, Map<String, Component> placeholders) {
+        if (template == null) return Component.empty();
+        if (placeholders == null) placeholders = Collections.emptyMap();
+        MutableComponent result = Component.empty();
+        StringBuilder current = new StringBuilder();
+        Style currentStyle = Style.EMPTY;
+
+        int i = 0;
+        while (i < template.length()) {
+            char c = template.charAt(i);
+            if (c == '%') {
+                int end = template.indexOf('%', i + 1);
+                if (end > i) {
+                    if (current.length() > 0) {
+                        result.append(Component.literal(current.toString()).withStyle(currentStyle));
+                        current = new StringBuilder();
+                    }
+                    String key = template.substring(i + 1, end);
+                    Component replacement = placeholders.get(key);
+                    if (replacement != null) {
+                        Style merged = currentStyle.applyTo(replacement.getStyle());
+                        result.append(replacement.copy().withStyle(merged));
+                    }
+                    i = end + 1;
+                    continue;
+                }
+            }
+            if (c == '&' && i + 1 < template.length()) {
+                char code = template.charAt(i + 1);
+                if (current.length() > 0) {
+                    result.append(Component.literal(current.toString()).withStyle(currentStyle));
+                    current = new StringBuilder();
+                }
+                ChatFormatting formatting = ChatFormatting.getByCode(code);
+                if (formatting != null) {
+                    if (formatting.isColor()) {
+                        currentStyle = currentStyle.withColor(formatting);
+                    } else {
+                        currentStyle = currentStyle.applyFormat(formatting);
+                    }
+                }
+                i += 2;
+                continue;
+            }
+            current.append(c);
+            i++;
         }
         if (current.length() > 0) {
             result.append(Component.literal(current.toString()).withStyle(currentStyle));

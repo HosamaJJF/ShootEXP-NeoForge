@@ -13,10 +13,13 @@ import moe.feo.shootexp.util.ShootExpUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class ShootExpCommand {
@@ -92,11 +95,11 @@ public class ShootExpCommand {
 
     private int status(CommandContext<CommandSourceStack> ctx, ServerPlayer target) {
         PlayerStatus status = PlayerStatusManager.get(target.getUUID());
-        String msg = ShootExpUtil.lang("shootexp.message.status")
-                .replace("%PLAYER%", target.getName().getString())
-                .replace("%TIMES%", String.valueOf(status.getTimesOfShoot()))
-                .replace("%STOCK%", String.valueOf(status.getStock()));
-        ctx.getSource().sendSystemMessage(ShootExpUtil.formatComponent(msg));
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("PLAYER", target.getDisplayName());
+        placeholders.put("TIMES", Component.literal(String.valueOf(status.getTimesOfShoot())));
+        placeholders.put("STOCK", Component.literal(String.valueOf(status.getStock())));
+        ctx.getSource().sendSystemMessage(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.status"), placeholders));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -115,9 +118,9 @@ public class ShootExpCommand {
     private int restoreAll(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
         PlayerStatusManager.get(target.getUUID()).restoreAll();
-        String msg = ShootExpUtil.lang("shootexp.message.restore_all")
-                .replace("%PLAYER%", target.getName().getString());
-        ctx.getSource().sendSystemMessage(ShootExpUtil.formatComponent(msg));
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("PLAYER", target.getDisplayName());
+        ctx.getSource().sendSystemMessage(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.restore_all"), placeholders));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -125,10 +128,10 @@ public class ShootExpCommand {
         ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
         int count = IntegerArgumentType.getInteger(ctx, "count");
         PlayerStatusManager.get(target.getUUID()).addShootTimes(-count);
-        String msg = ShootExpUtil.lang("shootexp.message.restore_times")
-                .replace("%PLAYER%", target.getName().getString())
-                .replace("%AMOUNT%", String.valueOf(count));
-        ctx.getSource().sendSystemMessage(ShootExpUtil.formatComponent(msg));
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("PLAYER", target.getDisplayName());
+        placeholders.put("AMOUNT", Component.literal(String.valueOf(count)));
+        ctx.getSource().sendSystemMessage(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.restore_times"), placeholders));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -136,10 +139,10 @@ public class ShootExpCommand {
         ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         PlayerStatusManager.get(target.getUUID()).addStock(amount);
-        String msg = ShootExpUtil.lang("shootexp.message.restore_stock")
-                .replace("%PLAYER%", target.getName().getString())
-                .replace("%AMOUNT%", String.valueOf(amount));
-        ctx.getSource().sendSystemMessage(ShootExpUtil.formatComponent(msg));
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("PLAYER", target.getDisplayName());
+        placeholders.put("AMOUNT", Component.literal(String.valueOf(amount)));
+        ctx.getSource().sendSystemMessage(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.restore_stock"), placeholders));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -150,11 +153,11 @@ public class ShootExpCommand {
         PlayerStatus status = PlayerStatusManager.get(target.getUUID());
         status.setTimesOfShoot(times);
         status.setStock(stock);
-        String msg = ShootExpUtil.lang("shootexp.message.set")
-                .replace("%PLAYER%", target.getName().getString())
-                .replace("%TIMES%", String.valueOf(times))
-                .replace("%STOCK%", String.valueOf(stock));
-        ctx.getSource().sendSystemMessage(ShootExpUtil.formatComponent(msg));
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("PLAYER", target.getDisplayName());
+        placeholders.put("TIMES", Component.literal(String.valueOf(times)));
+        placeholders.put("STOCK", Component.literal(String.valueOf(stock)));
+        ctx.getSource().sendSystemMessage(ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.set"), placeholders));
         return Command.SINGLE_SUCCESS;
     }
 

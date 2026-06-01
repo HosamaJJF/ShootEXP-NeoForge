@@ -9,12 +9,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EatHandler {
 
@@ -75,28 +79,28 @@ public class EatHandler {
 
         // Broadcast message
         ServerLevel serverLevel = (ServerLevel) player.level();
-        String msg = ShootExpUtil.lang("shootexp.message.eat")
-                .replace("%PLAYER%", player.getName().getString())
-                .replace("%OWNER%", owner)
-                .replace("%RECIPIENT%", recipient)
-                .replace("%AMOUNT%", String.valueOf(amount));
+        Map<String, Component> placeholders = new HashMap<>();
+        placeholders.put("PLAYER", player.getDisplayName());
+        placeholders.put("OWNER", Component.literal(owner));
+        placeholders.put("RECIPIENT", Component.literal(recipient));
+        placeholders.put("AMOUNT", Component.literal(String.valueOf(amount)));
+        Component msg = ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.eat"), placeholders);
         if (Config.privateMessage()) {
-            player.displayClientMessage(ShootExpUtil.formatComponent(msg), false);
+            player.displayClientMessage(msg, false);
             // Notify the owner
             var ownerPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(owner);
             if (ownerPlayer != null) {
-                ownerPlayer.displayClientMessage(ShootExpUtil.formatComponent(msg), false);
+                ownerPlayer.displayClientMessage(msg, false);
             }
             // Notify the recipient
             if (recipient != null) {
                 var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipient);
                 if (recipientPlayer != null) {
-                    recipientPlayer.displayClientMessage(ShootExpUtil.formatComponent(msg), false);
+                    recipientPlayer.displayClientMessage(msg, false);
                 }
             }
         } else {
-            serverLevel.getServer().getPlayerList().broadcastSystemMessage(
-                    ShootExpUtil.formatComponent(msg), false);
+            serverLevel.getServer().getPlayerList().broadcastSystemMessage(msg, false);
         }
 
         return true;
