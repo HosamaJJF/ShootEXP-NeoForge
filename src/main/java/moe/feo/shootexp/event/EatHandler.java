@@ -81,16 +81,35 @@ public class EatHandler {
 
         // Broadcast message
         ServerLevel serverLevel = (ServerLevel) player.level();
+
+        // Resolve owner/recipient display names (try online players first)
+        Component ownerDisplay;
+        var ownerPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(owner);
+        if (ownerPlayer != null) {
+            ownerDisplay = ownerPlayer.getDisplayName();
+        } else {
+            ownerDisplay = Component.literal(owner);
+        }
+        Component recipientDisplay;
+        if (recipient != null) {
+            var recipientPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(recipient);
+            if (recipientPlayer != null) {
+                recipientDisplay = recipientPlayer.getDisplayName();
+            } else {
+                recipientDisplay = Component.literal(recipient);
+            }
+        } else {
+            recipientDisplay = Component.literal("");
+        }
+
         Map<String, Component> placeholders = new HashMap<>();
         placeholders.put("PLAYER", player.getDisplayName());
-        placeholders.put("OWNER", Component.literal(owner));
-        placeholders.put("RECIPIENT", Component.literal(recipient));
+        placeholders.put("OWNER", ownerDisplay);
+        placeholders.put("RECIPIENT", recipientDisplay);
         placeholders.put("AMOUNT", Component.literal(String.valueOf(amount)));
         Component msg = ShootExpUtil.formatMessage(ShootExpUtil.lang("shootexp.message.eat"), placeholders);
         if (Config.privateMessage()) {
             player.displayClientMessage(msg, false);
-            // Notify the owner
-            var ownerPlayer = serverLevel.getServer().getPlayerList().getPlayerByName(owner);
             if (ownerPlayer != null) {
                 ownerPlayer.displayClientMessage(msg, false);
             }
